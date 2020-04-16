@@ -1,7 +1,7 @@
 from socket import *
 from threading import Thread
 
-from time import clock
+from time import perf_counter
 
 class TCPServer:
 
@@ -102,8 +102,8 @@ class TCPServer:
             if self.streamTimeout > 0:
                 if len(data) == 0:
                     if self.clockedOut == -1:
-                        self.clockedOut = clock()
-                    elif clock() - self.clockedOut > self.streamTimeout:
+                        self.clockedOut = perf_counter()
+                    elif perf_counter() - self.clockedOut > self.streamTimeout:
                         print("Server: Stream Error (TIMEOUT)")
                         self.disconnect()
                 else:

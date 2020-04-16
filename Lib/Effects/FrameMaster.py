@@ -5,13 +5,14 @@ from Lib.Objects.Display import Display
 
 class FrameMaster(SubEngine):
 
-    def __init__(self, pPort):
+    def __init__(self, pPort, ip = None):
         super().__init__("FrameMaster", 1)
         self.port = pPort
+        self.ip = ip
         self.display = None
 
     def setup(self):
-        self.display = Display(self.pixellength, 0, self.port)
+        self.display = Display(self.pixellength, 0, self.port, ip=self.ip)
         self.display.startServer()
 
     def terminate(self):
