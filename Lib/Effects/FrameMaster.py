@@ -14,6 +14,9 @@ class FrameMaster(SubEngine):
         self.display = Display(self.pixellength, 0, self.port)
         self.display.startServer()
 
+    def terminate(self):
+        self.display.stopServer()
+
 
     def update(self):
         self.display.update()

@@ -5,19 +5,13 @@ class Display(TCPServer, Object):
 
     def __init__(self, pPixellength,pPosition, pPort):
         self.pixellength = pPixellength
-        TCPServer.__init__(pPort, self.pixellength*3,)
-        Object.__init__(position=pPosition, content=[[-1,-1,-1]] * self.pixellength)
-
-    def setup(self):
-        self.startServer()
-
-    def terminate(self):
-        self.stopServer()
+        TCPServer.__init__(self, pPort, self.pixellength*3)
+        Object.__init__(self, position=pPosition, content=[[-1,-1,-1]] * self.pixellength)
 
     def update(self):
         try:
+            frame = []
             if len(self.buffer) != 0:
-                frame = []
                 pixel = []
                 for bit in self.buffer:
                     if len(pixel) < 3:
