@@ -3,9 +3,9 @@ from Lib.Objects.Object import Object
 
 class Display(TCPServer, Object):
 
-    def __init__(self, pPixellength,pPosition, pPort):
+    def __init__(self, pPixellength,pPosition, pPort, pIp=None):
         self.pixellength = pPixellength
-        TCPServer.__init__(self, pPort, self.pixellength*3)
+        TCPServer.__init__(self, pPort, self.pixellength*3, pIp=pIp)
         Object.__init__(self, position=pPosition, content=[[-1,-1,-1]] * self.pixellength)
 
     def update(self):
