@@ -12,7 +12,6 @@ class FakePipe:
 
     def send(self, plain):
         self.frames.append(plain)
-        print(self.frames)
 
     def recv(self):
         if self.poll():

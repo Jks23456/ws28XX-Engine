@@ -18,9 +18,6 @@ class Fading(SubEngine):
         self.getColor()
         self.p.setColor(self.rgb)
 
-    def onMessage(self, topic, payload):
-        print(["Fading", topic, payload])
-
     def getStates(self):
         return [["strip/info/Fading/enable", str(self.isEnabled)]]
 

@@ -35,12 +35,15 @@ class Display(TCPServer, Object):
             self.framebuffer.append(frame)
             if len(self.framebuffer) > self.framebufferSize:
                 self.isBuffering = False
-
-
         else:
             self.content = self.framebuffer.pop(0)
             if len(self.framebuffer)==0:
                 self.isBuffering = True
+
+        if not self.isConnected and len(self.content) > 0:
+            self.buffer = []
+            self.content = []
+
 
 
     def isFrame(self, pFrame):
