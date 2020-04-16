@@ -32,5 +32,6 @@ class TestEngine(SubEngine):
 if __name__ == '__main__':
     eng = Engine()
     eng.setControler(FrameStreamer("192.168.2.114", 6501, 450))
-    eng.addSubEngine(FrameMaster(950), True)
+    #eng.addSubEngine(FrameMaster(950), True)
+    eng.addSubEngine(Alarm(1), True)
     eng.run()

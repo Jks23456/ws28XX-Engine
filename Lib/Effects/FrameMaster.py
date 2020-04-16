@@ -37,13 +37,15 @@ class FrameMaster(SubEngine):
 
     def update(self):
         if self.display.isConnected:
+            if self.waitingObj.isVisible:
+                self.waitingObj.isVisible = False
             self.display.update()
             if self.display.isBuffering:
                 self.load.set(len(self.display.framebuffer))
             else:
                 self.load.clear()
         else:
+            if not self.waitingObj.isVisible:
+                self.waitingObj.isVisible = True
             self.waitingEffekt.sendFrame()
             self.waitingObj.content = self.subPipe.getFrame()
-            print(self.waitingObj.content)
-
