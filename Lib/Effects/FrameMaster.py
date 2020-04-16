@@ -43,4 +43,4 @@ class FrameMaster(SubEngine):
                 self.load.clear()
         else:
             self.waitingObj.isVisible = True
-        print(len(self.waitingObj.content), len(self.load.content), len(self.display.content))
+            self.display.resetBuffer()

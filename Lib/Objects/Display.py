@@ -41,8 +41,6 @@ class Display(TCPServer, Object):
             if len(self.framebuffer)==0:
                 self.isBuffering = True
 
-
-
     def isFrame(self, pFrame):
         if len(pFrame) != self.pixellength:
             return False
@@ -54,3 +52,8 @@ class Display(TCPServer, Object):
                 if color > 255 or color < -1:
                     return False
         return True
+
+    def resetBuffer(self):
+        self.framebuffer = []
+        self.isBuffering = True
+        self.content = []
