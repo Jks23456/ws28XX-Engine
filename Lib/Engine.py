@@ -1,12 +1,11 @@
 import time
 import multiprocessing
-from Lib.Compression import decompFrame
 from Lib.Effects.Alarm import Alarm
 
 class ProcessWrap:
 
     def __init__(self, pSub, pIsEnabled):
-        self.mqttTopic = pSub.mqttTopic
+        self.name = pSub.name
         self.subEngine = pSub
         self.process = None
         self.pipe = None
@@ -82,30 +81,30 @@ class Engine:
             self.pixellength = self.controler.pixellength
 
             while self.isRunning:
-                fr = time.clock()
+                fr = time.perf_counter()
                 frames = [[-1, -1, -1]] * self.pixellength
-                for wrap in self.processes:
-                    if wrap.isEnabled and wrap.isAcknowledged and wrap.isActive():
-                        wrap.pipe.send("f")
-                for wrap in self.processes:
-                    if wrap.isEnabled and not wrap.isActive():
-                        self.startSubEngine(wrap)
-                    elif not wrap.isEnabled and wrap.isActive():
-                        self.terminateSubEngine(wrap)
-                    elif wrap.isEnabled:
-                        frame = self.frames[wrap.mqttTopic]
+                for prWrap in self.processes:
+                    if prWrap.isEnabled and prWrap.isAcknowledged and prWrap.isActive():
+                        prWrap.pipe.send("f")
+                for prWrap in self.processes:
+                    if prWrap.isEnabled and not prWrap.isActive():
+                        self.startSubEngine(prWrap)
+                    elif not prWrap.isEnabled and prWrap.isActive():
+                        self.terminateSubEngine(prWrap)
+                    elif prWrap.isEnabled:
+                        frame = self.frames[prWrap.name]
 
                         buff = []
-                        while wrap.pipe.poll():
-                            buff.append(wrap.pipe.recv())
-                            wrap.isAcknowledged = True
+                        while prWrap.pipe.poll():
+                            buff.append(prWrap.pipe.recv())
+                            prWrap.isAcknowledged = True
 
                         if len(buff)>0:
-                            if wrap.isCompressed:
-                                frame = wrap.compClass.decompress(buff.pop(len(buff) - 1))
+                            if prWrap.isCompressed:
+                                frame = prWrap.compClass.decompress(buff.pop(len(buff) - 1))
                             else:
                                 frame = buff.pop(len(buff) - 1)
-                            self.frames[wrap.mqttTopic] = frame
+                            self.frames[prWrap.name] = frame
                         for i in range(min(len(frame),len(frames), self.pixellength)):
                             if frames[i] == [-1, -1, -1]:
                                 frames[i] = frame[i]
@@ -119,7 +118,7 @@ class Engine:
 
                 self.controler.setFrame(completeFrame)
 
-                fr = time.clock() - fr
+                fr = time.perf_counter() - fr
                 if fr <= 0.02:
                     time.sleep(0.02 - fr)
 
@@ -139,12 +138,12 @@ class Engine:
             prWrap.pipe = parent
             prWrap.isEnabled = True
             process.start()
-            print("Started: " + prWrap.mqttTopic)
-            self.frames[prWrap.mqttTopic] = ([[-1, -1, -1]]*self.pixellength)
+            print("Started: " + prWrap.name)
+            self.frames[prWrap.name] = ([[-1, -1, -1]]*self.pixellength)
 
     def terminateSubEngine(self, prWrap):
         if prWrap.isActive():
-            print("Terminate: " + prWrap.mqttTopic)
+            print("Terminate: " + prWrap.name)
             prWrap.pipe.send("t")
             print("Joining Process...")
             prWrap.process.join()

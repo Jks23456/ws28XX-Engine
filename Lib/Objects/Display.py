@@ -1,75 +1,39 @@
-from socket import socket
-from socket import AF_INET
-from socket import SOCK_DGRAM
+from Lib.Connection.TCPServer import TCPServer
+from Lib.Objects.Object import Object
 
-from threading import Thread
+class Display(TCPServer, Object):
 
-class Display:
-
-    def __init__(self, pPort, pPixellength = 10, pWhiteList = None):
-        self.port = pPort
+    def __init__(self, pPixellength,pPosition, pPort):
         self.pixellength = pPixellength
-        self.whitelist = pWhiteList
-
-        self.isVisible = True
-        self.position = 0
-        self.content = [[-1,-1,-1]] * self.pixellength
+        TCPServer.__init__(pPort, self.pixellength*3,)
+        Object.__init__(position=pPosition, content=[[-1,-1,-1]] * self.pixellength)
 
 
-        self.isRunning = False
-        self.thread = None
-        self.sock = None
-
-    def startSocket(self):
-        if self.thread == None:
-            self.sock = socket(AF_INET, SOCK_DGRAM)
-            self.sock.bind(("127.0.0.1", self.port))
-            self.thread = Thread(target=self.recive)
-            self.thread.start()
-
-    def terminateSocket(self):
-        if self.thread != None:
-            self.isRunning = False
-            Thread.join(self.thread)
-            self.sock.close()
-
-    def recive(self):
-        self.isRunning = True
-        while self.isRunning:
-            try:
-                data, addr = self.sock.recvfrom(self.pixellength*3)
-                if self.whitelist != None:
-                    pass
-                else:
-                    self.setContent(data)
-
-            except:
-                print("Display Object: Socket Error")
-
-    def setContent(self, pBytes):
-        frame = []
-        block = []
-        for byte in pBytes:
-            if len(block)>=3:
-                frame.append(block)
-                block = []
-            block.append(int(byte))
-        frame.append(block)
-        if self.isContent(frame):
-            self.content = frame
-
-    def isContent(self, pFrame):
+    def update(self):
         try:
-            if len(pFrame) != self.pixellength:
-                return False
+            if len(self.buffer) != 0:
+                frame = []
+                pixel = []
+                for bit in self.buffer:
+                    if len(pixel) < 3:
+                        pixel.append(int(bit))
+                    else:
+                        frame.append(pixel)
+                        pixel = [bit]
+                frame.append(pixel)
+            if self.isFrame(frame):
+                self.content = frame
+        except Exception as e:
+            print("Display: "+str(e))
 
-            for pixel in pFrame:
-                if len(pixel) != 3:
-                    return False
-                for color in pixel:
-                    if type(color) is not int or color < 0 or color > 255:
-                        return False
-        except:
-            print("Display Objekt: Wrong Input Format!")
+    def isFrame(self, pFrame):
+        if len(pFrame) != self.pixellength:
             return False
+
+        for pixel in pFrame:
+            for color in pixel:
+                if color > 255 or color < -1:
+                    return False
         return True
+
+

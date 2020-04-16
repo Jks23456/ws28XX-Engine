@@ -1,11 +1,12 @@
 from Lib.SubEngine import SubEngine
+from Lib.Compression.BlockCompression import BlockCompression
 from Lib.Objects.Snake import Snake
 
 class Alarm(SubEngine):
 
     def __init__(self, pSnakelength):
+        super().__init__("Alarm", 1, True, BlockCompression())
         self.snakelength = pSnakelength
-        self.build("Alarm", 1, False, None)
         self.rgb = [255, 0, 0]
         self.obj = []
 

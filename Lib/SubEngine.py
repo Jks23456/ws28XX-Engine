@@ -1,12 +1,12 @@
+from abc import abstractmethod
 from Lib.Layer import Layer
-from Lib.Compression import compFrame
 from time import sleep
 
 class SubEngine:
 
-    def build(self, mqtttopic, layercount, pIsCompressed, pCompressionClass):
+    def __init__(self, pName, layercount, pIsCompressed=False, pCompressionClass=None):
         self.layList = []
-        self.mqttTopic = mqtttopic
+        self.name = pName
         self.isCompressed = pIsCompressed
         self.compClass = pCompressionClass
         self.isRunning = False
@@ -15,7 +15,6 @@ class SubEngine:
 
         for i in range(layercount):
             tmp = Layer()
-            tmp.build()
             self.layList.append(tmp)
 
     def configur(self, pPipe, pPixellength):
@@ -32,6 +31,7 @@ class SubEngine:
 
     def run(self):
         self.isRunning = True
+        self.setup()
         while self.isRunning:
             try:
                 self.controler()
@@ -51,7 +51,7 @@ class SubEngine:
                 if plain[j] == self.transparent and frames[i][j] != self.transparent:
                     plain[j] = frames[i][j]
         if self.isCompressed:
-            self.pipe.send(compFrame(plain))
+            self.pipe.send(self.compClass.compress(plain))
         else:
             self.pipe.send(plain)
 
@@ -66,9 +66,24 @@ class SubEngine:
             for stri in buff:
                 if stri == "t":
                     self.isRunning = False
-                    self.onMessage("TERMINATE","TERMINATE")
+                    self.terminate()
                 elif stri == "f":
                     self.sendFrame()
                 elif stri.startswith("m:"):
                     mqtt = stri[2:].split("/")
                     self.onMessage(mqtt[0], mqtt[1])
+
+    def terminate(self):
+        pass
+
+    def setup(self):
+        pass
+
+    def update(self):
+        pass
+
+    def onMessage(self, topic, payload):
+        pass
+
+    def getState(self):
+        pass

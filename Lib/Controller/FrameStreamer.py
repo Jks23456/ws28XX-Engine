@@ -1,5 +1,4 @@
 from Lib.Connection.TCPClient import TCPClient
-from Lib.Compression import compFrame
 
 class FrameStreamer:
 
