@@ -1,15 +1,16 @@
 from Lib.Connection.TCPServer import TCPServer
 from Lib.Objects.Object import Object
+from Lib.Objects.Loading import Loading
 
 class Display(TCPServer, Object):
 
-    def __init__(self, pPixellength,pPosition, pPort, ip=None, framebuffer=50):
+    def __init__(self, pPixellength, pPosition, pPort, ip=None, framebuffer=150):
+        TCPServer.__init__(self, pPort, pPixellength * 3, ip=ip)
+        Object.__init__(self, position=pPosition, content=[[-1, -1, -1]] * pPixellength)
         self.pixellength = pPixellength
         self.framebufferSize=framebuffer
         self.framebuffer = []
         self.isBuffering = True
-        TCPServer.__init__(self, pPort, self.pixellength*3, ip=ip)
-        Object.__init__(self, position=pPosition, content=[[-1,-1,-1]] * self.pixellength)
 
     def update(self):
         try:
@@ -34,6 +35,8 @@ class Display(TCPServer, Object):
             self.framebuffer.append(frame)
             if len(self.framebuffer) > self.framebufferSize:
                 self.isBuffering = False
+
+
         else:
             self.content = self.framebuffer.pop(0)
             if len(self.framebuffer)==0:
