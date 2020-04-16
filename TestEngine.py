@@ -2,8 +2,10 @@ from Lib.Controller.FrameStreamer import FrameStreamer
 from Lib.Engine import Engine
 from Lib.SubEngine import SubEngine
 from Lib.Objects.Loading import Loading
+from Lib.Effects.FrameMaster import FrameMaster
 from Lib.Effects.Fading import Fading
 from Lib.Effects.Alarm import Alarm
+
 
 class TestEngine(SubEngine):
 
@@ -30,5 +32,5 @@ class TestEngine(SubEngine):
 if __name__ == '__main__':
     eng = Engine()
     eng.setControler(FrameStreamer("192.168.2.114", 6501, 450))
-    eng.addSubEngine(TestEngine(), True)
+    eng.addSubEngine(FrameMaster(950), True)
     eng.run()

@@ -1,43 +1,49 @@
 from Lib.SubEngine import SubEngine
 from Lib.Objects.Display import Display
 from Lib.Objects.Loading import Loading
-
+from Lib.Objects.Object import Object
+from Lib.Effects.Fading import Fading
+from Lib.Connection.FakePipe import FakePipe
 
 class FrameMaster(SubEngine):
 
     def __init__(self, pPort, ip = None, framebuffer=150):
-        super().__init__("FrameMaster", 2)
+        super().__init__("FrameMaster", 3)
         self.port = pPort
         self.ip = ip
         self.framebufferSize = framebuffer
         self.display = None
         self.load = None
 
+        self.waitingEffekt = Fading()
+        self.subPipe = FakePipe()
+        self.waitingObj = Object()
+        self.addObj(self.waitingObj, layer=0)
+
     def setup(self):
         self.load = Loading(self.pixellength, 0, self.framebufferSize)
-        self.addObj(self.load, layer=0)
+        self.addObj(self.load, layer=1)
 
         self.display = Display(self.pixellength, 0, self.port, ip=self.ip, framebuffer=self.framebufferSize)
         self.display.setStreamTimeout(5)
         self.display.startServer()
-        self.addObj(self.display, layer=1)
+        self.addObj(self.display, layer=2)
+
+        self.waitingEffekt.configur(self.subPipe, self.pixellength)
+        self.waitingEffekt.setup()
 
     def terminate(self):
         self.display.stopServer()
 
-
     def update(self):
-        self.display.update()
-        if self.display.isBuffering:
-            self.load.set(len(self.display.framebuffer))
+        if self.display.isConnected:
+            self.display.update()
+            if self.display.isBuffering:
+                self.load.set(len(self.display.framebuffer))
+            else:
+                self.load.clear()
         else:
-            self.load.clear()
+            self.waitingEffekt.sendFrame()
+            self.waitingObj.content = self.subPipe.getFrame()
+            print(self.waitingObj.content)
 
-
-
-    def onMessage(self, topic, payload):
-        if topic == "TERMINATE" and payload == "TERMINATE":
-            self.display.stopServer()
-
-    def getStates(self):
-        return None
