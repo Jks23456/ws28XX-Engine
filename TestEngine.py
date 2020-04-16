@@ -1,11 +1,11 @@
-from Lib.Controller.Console import Consol
+from Lib.Controller.FrameStreamer import FrameStreamer
 from Lib.Engine import Engine
 from Lib.Effects.Fading import Fading
-from Lib.Effects.FrameMaster import FrameMaster
+from Lib.Effects.Alarm import Alarm
 
 
 if __name__ == '__main__':
     eng = Engine()
-    eng.setControler(Consol(15))
-    eng.addSubEngine(FrameMaster(6501,"192.168.2.109"), True)
+    eng.setControler(FrameStreamer("192.168.2.114", 6501, 450))
+    eng.addSubEngine(Alarm(1), True)
     eng.run()
