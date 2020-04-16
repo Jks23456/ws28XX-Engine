@@ -3,20 +3,23 @@ from Lib.Objects.Background import Background
 
 class Fading(SubEngine):
 
-    def __init__(self, pPixellength):
-        self.build("Fading", pPixellength, 1)
+    def __init__(self):
+        SubEngine.__init__(self, "Fading", 1)
         self.rgb = [255, 0, 0]
         self.phase = ([0, 1, 0], [-1, 0, 0], [0, 0, 1], [0, -1, 0], [1, 0, 0], [0, 0, -1])
         self.index = 0
+        self.p = None
+
+    def setup(self):
         self.p = Background(self.pixellength)
         self.addObj(self.p)
-
-    def onMessage(self, topic, payload):
-        print(["Fading", topic, payload])
 
     def update(self):
         self.getColor()
         self.p.setColor(self.rgb)
+
+    def onMessage(self, topic, payload):
+        print(["Fading", topic, payload])
 
     def getStates(self):
         return [["strip/info/Fading/enable", str(self.isEnabled)]]

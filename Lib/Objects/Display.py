@@ -8,6 +8,11 @@ class Display(TCPServer, Object):
         TCPServer.__init__(pPort, self.pixellength*3,)
         Object.__init__(position=pPosition, content=[[-1,-1,-1]] * self.pixellength)
 
+    def setup(self):
+        self.startServer()
+
+    def terminate(self):
+        self.stopServer()
 
     def update(self):
         try:
@@ -35,5 +40,3 @@ class Display(TCPServer, Object):
                 if color > 255 or color < -1:
                     return False
         return True
-
-

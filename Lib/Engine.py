@@ -131,6 +131,7 @@ class Engine:
 
     def startSubEngine(self, prWrap):
         if self.isRunning and not prWrap.isActive(): #[pSub.mqttTopic, process, parent, True]
+            print("Start: " + prWrap.name)
             parent, child = multiprocessing.Pipe()
             process = multiprocessing.Process(target=prWrap.subEngine.run)
             prWrap.subEngine.configur(child, self.pixellength)
@@ -138,7 +139,6 @@ class Engine:
             prWrap.pipe = parent
             prWrap.isEnabled = True
             process.start()
-            print("Started: " + prWrap.name)
             self.frames[prWrap.name] = ([[-1, -1, -1]]*self.pixellength)
 
     def terminateSubEngine(self, prWrap):
