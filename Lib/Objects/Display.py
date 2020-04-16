@@ -26,23 +26,20 @@ class Display(TCPServer, Object):
                         pixel = [bit]
                 frame.append(pixel)
 
-            if self.isFrame(frame):
-                self.framebuffer.append(frame)
+            if not self.isFrame(frame):
+                return
+
         except Exception as e:
             print("Display: "+str(e))
 
+        self.framebuffer.append(frame)
         if self.isBuffering:
-            self.framebuffer.append(frame)
             if len(self.framebuffer) > self.framebufferSize:
                 self.isBuffering = False
         else:
             self.content = self.framebuffer.pop(0)
             if len(self.framebuffer)==0:
                 self.isBuffering = True
-
-        if not self.isConnected and len(self.content) > 0:
-            self.buffer = []
-            self.content = []
 
 
 
