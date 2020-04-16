@@ -12,14 +12,16 @@ class Display(TCPServer, Object):
         try:
             frame = []
             if len(self.buffer) != 0:
+                fr = self.buffer.pop(0)
                 pixel = []
-                for bit in self.buffer:
+                for bit in fr:
                     if len(pixel) < 3:
                         pixel.append(int(bit))
                     else:
                         frame.append(pixel)
                         pixel = [bit]
                 frame.append(pixel)
+
             if self.isFrame(frame):
                 self.content = frame
         except Exception as e:
@@ -30,6 +32,8 @@ class Display(TCPServer, Object):
             return False
 
         for pixel in pFrame:
+            if len(pixel)!=3:
+                return False
             for color in pixel:
                 if color > 255 or color < -1:
                     return False

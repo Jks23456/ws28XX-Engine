@@ -108,6 +108,7 @@ class Engine:
                         for i in range(min(len(frame),len(frames), self.pixellength)):
                             if frames[i] == [-1, -1, -1]:
                                 frames[i] = frame[i]
+
                 brPercent = float(self.brightness) / 100
                 completeFrame = []
                 for i in range(len(frames)):

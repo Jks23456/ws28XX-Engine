@@ -13,7 +13,9 @@ class FrameMaster(SubEngine):
 
     def setup(self):
         self.display = Display(self.pixellength, 0, self.port, ip=self.ip)
+        self.display.setStreamTimeout(5)
         self.display.startServer()
+        self.addObj(self.display)
 
     def terminate(self):
         self.display.stopServer()
