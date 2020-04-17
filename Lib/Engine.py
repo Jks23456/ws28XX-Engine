@@ -62,13 +62,13 @@ class Engine:
                 self.brightness = int(msg.payload)
         elif topic.startswith("strip/effekt/"):
             topic = topic[13:]
-            for row in self.processes:
-                if topic.startswith(row[0]+"/"):
-                    topic = topic[len(row[0])+1:]
+            for prWrap in self.processes:
+                if topic.startswith(prWrap.name+"/"):
+                    topic = topic[len(prWrap.name)+1:]
                     if topic == "enable":
-                        row[3] = msg.payload.lower() in ("true", "t", "1", "on")
-                    elif row[2] != None:
-                        row[2].send("m:"+topic+"/"+msg.payload)
+                        prWrap.isEnabled = msg.payload.lower() in ("true", "t", "1", "on")
+                    elif prWrap.isActive:
+                        prWrap.pipe.send("m:"+topic+"/"+msg.payload)
 
     def addSubEngine(self, pSub, pIsEnabled):
         if not self.isRunning:
