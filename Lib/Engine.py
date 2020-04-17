@@ -66,7 +66,7 @@ class Engine:
                 if topic.startswith(prWrap.name+"/"):
                     topic = topic[len(prWrap.name)+1:]
                     if topic == "enable":
-                        prWrap.isEnabled = msg.payload == "True"
+                        prWrap.isEnabled = str(msg.payload).lower() in("true","t","on","1")
                         print(prWrap.isEnabled)
                     elif prWrap.isActive:
                         prWrap.pipe.send("m:"+topic+"/"+msg.payload)
