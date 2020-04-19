@@ -1,12 +1,11 @@
+from multiprocessing import Process
 import pyaudio
 import struct
 import numpy as np
-import threading
 
-class Adapter(threading.Thread):
+class Microphone:
 
     def __init__(self):
-        threading.Thread.__init__(self)
         self.isEnabled = False
         self.raw_data = []
         self.fft_data = []
