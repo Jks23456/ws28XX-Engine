@@ -132,3 +132,12 @@ class Manager:
             letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
             retString = ''.join(random.choice(letters) for i in range(length))
         return retString
+
+
+mainObj = None
+@staticmethod
+def getManager():
+    global mainObj
+    if mainObj == None:
+        mainObj = Manager()
+    return mainObj
