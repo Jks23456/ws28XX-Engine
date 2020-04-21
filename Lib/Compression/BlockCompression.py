@@ -49,6 +49,14 @@ class BlockCompression:
             retVal = retVal + [row[1]] * (row[0] + 1)
         return retVal
 
+obj = None
+@staticmethod
+def getBlockCompression():
+    global obj
+    if obj == None:
+        obj = BlockCompression()
+    return obj
+
 
 
 

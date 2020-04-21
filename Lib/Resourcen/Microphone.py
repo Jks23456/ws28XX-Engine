@@ -1,7 +1,9 @@
 from multiprocessing import Process
+from Lib.Resourcen.Manager import getManager
 import pyaudio
 import struct
 import numpy as np
+
 
 class Microphone:
 
@@ -10,6 +12,12 @@ class Microphone:
         self.raw_data = []
         self.fft_data = []
         self.amp_data = []
+
+        self.manager = getManager()
+        self.manager.defineData("MIC_RAW", 1024)
+        self.manager.defineData("MIC_FFT", 1024)
+        self.manager.defineData("MIC_AMP", 1024)
+
         self.p = pyaudio.PyAudio()
         self.chunk = 1024
         self.offset = [0]*self.chunk
@@ -60,6 +68,10 @@ class Microphone:
             for a,b in zip1:
                 diff.append(a-b)
             self.fft_data = diff[:]
+
+            self.manager.writeData("MIC_RAW", self.raw_data)
+            self.manager.writeData("MIC_FFT", self.fft_data)
+            self.manager.writeData("MIC_AMP", self.amp_data)
 
     def resize(self, num):
         return (num*2)/self.chunk

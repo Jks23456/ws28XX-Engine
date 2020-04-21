@@ -2,6 +2,7 @@ from multiprocessing import Process
 from multiprocessing.shared_memory import SharedMemory
 import random
 
+
 class MemoryMap:
 
     def __init__(self, pName, pCreate):
@@ -78,6 +79,7 @@ class MemoryMap:
         for blk in self.blocks:
             retStri = retStri + "|" + blk[0] + "|" + str(blk[1]) + "|" + str(blk[2])
         return retStri
+
 
 class Manager:
 
