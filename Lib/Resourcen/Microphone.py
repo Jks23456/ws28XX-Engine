@@ -75,3 +75,7 @@ class Microphone:
 
     def resize(self, num):
         return (num*2)/self.chunk
+
+if __name__ == '__main__':
+    m = Microphone()
+    m.run()
