@@ -33,6 +33,12 @@ class MemoryMap:
                 self.blocks.append(tmp)
                 tmp = [str]
 
+    def terminate(self):
+        try:
+            self.shm.close()
+        except Exception as e:
+            print("MemoryMap: " + str(e))
+
 
     def addSpace(self, pName, pSize):
         if pSize <= self.available:
@@ -134,7 +140,6 @@ class Manager:
             letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
             retString = ''.join(random.choice(letters) for i in range(length))
         return retString
-
 
 mainObj = None
 @staticmethod

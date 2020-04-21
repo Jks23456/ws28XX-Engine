@@ -48,12 +48,13 @@ class StripArrangement:
             for row in self.layout:
                 row[0].show()
 
-    def test(self):
+    def test(self, pTime):
         if self.isCreated:
             for i in range(self.pixellength):
                 self.setPixel(i, (255, 0, 0))
                 self.show()
-                sleep(0.5)
+                sleep(pTime)
             for i in range(self.pixellength):
                 self.setPixel(i, (0, 0, 0))
                 self.show()
+                sleep(pTime)

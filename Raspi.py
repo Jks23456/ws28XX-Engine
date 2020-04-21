@@ -10,8 +10,8 @@ from Lib.Objects.Object import Object
 
 if __name__ == '__main__':
     strip = StripArrangement()
-    strip.addStrip(205, 13, 11, 1, False)
-    strip.addStrip(245, 18, 10, 0, True)
+    strip.addStrip(245, 13, 11, 1, False)
+    strip.addStrip(205, 18, 10, 0, True)
 
     eng = Engine()
     eng.setControler(strip)
