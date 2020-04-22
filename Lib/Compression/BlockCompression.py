@@ -50,7 +50,6 @@ class BlockCompression:
         return retVal
 
 obj = None
-@staticmethod
 def getBlockCompression():
     global obj
     if obj == None:

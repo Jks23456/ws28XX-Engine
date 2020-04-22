@@ -5,7 +5,7 @@ from time import perf_counter
 
 class TCPServer:
 
-    def __init__(self, pPort, pBufferSize, ip=None, hostname=None):
+    def __init__(self, pPort, pBufferSize, ip=None, hostname=None, onMessageMethod=None):
         try:
             if hostname == None:
                 hostname = gethostname()
@@ -13,6 +13,8 @@ class TCPServer:
                 ip = gethostbyname(hostname)
         except:
             print("Server: No Server Ip")
+
+        self.onMessageMethod = onMessageMethod
 
         self.host = [ip, hostname]
         self.addr = (self.host[0], pPort)
@@ -63,6 +65,8 @@ class TCPServer:
                 data = self.reciveData()
                 if data is not None:
                     self.buffer.append(data)
+                    if self.onMessageMethod != None:
+                        self.onMessageMethod(data)
             else:
                 self.listen()
 
