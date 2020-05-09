@@ -25,8 +25,7 @@ class Fading(SubEngine):
         for i in range(3):
             self.rgb[i] = self.rgb[i] + (self.phase[self.index][i] * speed)
 
-        if self.rgb[0] < 0 or self.rgb[0] > 255 or self.rgb[1] < 0 or self.rgb[1] > 255 or self.rgb[2] < 0 or self.rgb[
-            2] > 255:
+        if self.rgb[0] < 0 or self.rgb[0] > 255 or self.rgb[1] < 0 or self.rgb[1] > 255 or self.rgb[2] < 0 or self.rgb[2] > 255:
             for i in range(3):
                 self.rgb[i] = self.rgb[i] - self.phase[self.index][i]
 
