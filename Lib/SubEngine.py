@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from Lib.Layer import Layer
 from time import sleep
 
@@ -41,6 +40,12 @@ class SubEngine:
 
     def sendFrame(self):
         self.update()
+        if self.isCompressed:
+            self.pipe.send(self.compClass.compress(self.getFrame()))
+        else:
+            self.pipe.send(self.getFrame())
+
+    def getFrame(self):
         plain = [self.transparent] * self.pixellength
         frames = []
         for i in range(len(self.layList)):
@@ -50,10 +55,7 @@ class SubEngine:
             for j in range(self.pixellength):
                 if plain[j] == self.transparent and frames[i][j] != self.transparent:
                     plain[j] = frames[i][j]
-        if self.isCompressed:
-            self.pipe.send(self.compClass.compress(plain))
-        else:
-            self.pipe.send(plain)
+        return plain
 
     def controler(self):
         buff = []

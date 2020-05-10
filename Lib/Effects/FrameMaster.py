@@ -3,7 +3,6 @@ from Lib.Objects.Display import Display
 from Lib.Objects.Loading import Loading
 from Lib.Objects.Object import Object
 from Lib.Effects.Fading import Fading
-from Lib.Connection.FakePipe import FakePipe
 
 class FrameMaster(SubEngine):
 
