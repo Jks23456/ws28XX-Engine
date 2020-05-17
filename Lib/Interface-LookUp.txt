@@ -11,6 +11,7 @@ Subengine:
     Methods:
         getStates() returns [MqTT.Topic Type String, MqTT.Payload Type String]
         update() returns None
+        setup()
         onMessage(MqTT.Topic Type String, MqTT.Payload Type String) returns None
 
 Object:

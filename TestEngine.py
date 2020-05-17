@@ -1,28 +1,15 @@
 from Lib.Engine import Engine
-from Lib.SubEngine import SubEngine
-from Lib.Objects.GifViewer import GifViewer
-from Lib.Controller.Console import Consol
-from Lib.Effects.Alarmclock import Alarmclock
-
-class Sub(SubEngine):
-
-   def __init__(self):
-      super().__init__("Sub", 1)
-      self.obj = GifViewer("C:/Users/Jan/Desktop/TestAnimation.gif")
-      self.obj.position = 10
-      self.addObj(self.obj)
-
-   def update(self):
-      self.obj.nextImage()
-
+from Lib.Controller.FrameViewer import FrameViewer
+from Lib.Effects.Alarmclock import Alarmclock, Signal
+from Lib.Effects.Alarm import Alarm
+from Lib.Effects.Fading import Fading
 
 if __name__ == '__main__':
    sub = Alarmclock()
-   bo = [False, False, False, True, True, False, True]
-   sub.addAlarm(19,30, pSchedual=bo, pOnce=False)
-   sub.addAlarm(18,30, pOnce=True)
+   sub.addAlarm(17,47, Signal(Alarm(5, 20), 450, 5000, pSlowMotion=1))
 
    eng = Engine()
-   eng.setControler(Consol(20))
+   eng.setControler(FrameViewer(450, pPixelSize=2))
    eng.addSubEngine(sub, True)
+   eng.addSubEngine(Fading(), True)
    eng.run()
