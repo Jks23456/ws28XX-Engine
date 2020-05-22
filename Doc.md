@@ -14,7 +14,7 @@
   <li>processes as List
     <p><em>Contains all ProcessWrap instances</em></p>
   </li>
-  <li>framse as Dictonary
+  <li>frames as Dictonary
     <p><em>Contains current frames of running SubEngines</em></p>
   </li>
   <li>controler
