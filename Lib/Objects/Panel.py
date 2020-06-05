@@ -36,7 +36,7 @@ class Panel:
 
     def shift(self, pixel=[-1,-1,-1]):
         #lastPixel = self.kernelContent[len(self.kernelContent) - 1]
-        lastPixel = self.kernelContent.pop()
+        lastPixel = self.kernelContent.pop(len(self.kernelContent) - 1)
         if self.isLooped:
             self.kernelContent.insert(0, lastPixel)
         else:

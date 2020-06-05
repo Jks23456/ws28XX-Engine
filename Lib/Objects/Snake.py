@@ -9,7 +9,7 @@ class Snake(Object):
         self.setColor(color)
         self.double = self.position
 
-    def move(self, speed=1):
+    def move(self, speed=1.0):
         self.double = self.double + speed
         if self.double >= self.pixellength:
             self.double = 0

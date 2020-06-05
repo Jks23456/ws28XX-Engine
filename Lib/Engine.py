@@ -11,7 +11,6 @@ class ProcessWrap:
         self.pipe = None
         self.isAcknowledged = True
         self.isEnabled = pIsEnabled
-        self.isCompressed = pSub.isCompressed
         self.compClass = pSub.compClass
 
     def isActive(self):
@@ -32,21 +31,21 @@ class Engine:
         self.brightness = 100
         self.processes = []
         self.frames = {}
-        self.controler = None
+        self.controller = None
         self.pixellength = 0
 
-    def startMQTT(self,pName):
+    def startMQTT(self, pAddress, pName):
         import paho.mqtt.client as mqtt
         self.client = mqtt.Client()
         self.client.on_message = self.on_message
-        self.client.connect("localhost", 1883, 60)
+        self.client.connect(pAddress[0], pAddress[1], 60)
         self.client.subscribe(pName+ "/effekt/#")
         self.client.subscribe(pName+ "/command")
         self.client.subscribe(pName+ "/color/#")
         self.client.loop_start()
 
     def setControler(self, pControler):
-        self.controler = pControler
+        self.controller = pControler
 
     def on_message(self, client, userdata, msg):
         topic = msg.topic
@@ -78,8 +77,8 @@ class Engine:
     def run(self):
         try:
             self.isRunning = True
-            self.controler.setup()
-            self.pixellength = self.controler.pixellength
+            self.controller.setup()
+            self.pixellength = self.controller.pixellength
 
             while self.isRunning:
                 fr = time.perf_counter()
@@ -101,7 +100,7 @@ class Engine:
                             prWrap.isAcknowledged = True
 
                         if len(buff)>0:
-                            if prWrap.isCompressed:
+                            if prWrap.compClass is not None:
                                 frame = prWrap.compClass.decompress(buff.pop(len(buff) - 1))
                             else:
                                 frame = buff.pop(len(buff) - 1)
@@ -118,7 +117,7 @@ class Engine:
                         color.append(int(max(0, a) * brPercent))
                     completeFrame.append(color)
 
-                self.controler.setFrame(completeFrame)
+                self.controller.setFrame(completeFrame)
 
                 fr = time.perf_counter() - fr
                 if fr <= 0.02:
@@ -154,7 +153,6 @@ class Engine:
             prWrap.process = None
             prWrap.pipe = None
             prWrap.isEnabled = False
-
 
     def terminateAll(self):
         self.isRunning = False

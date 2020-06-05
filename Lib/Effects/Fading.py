@@ -1,3 +1,5 @@
+from colorsys import hsv_to_rgb
+
 from Lib.SubEngine import SubEngine
 from Lib.Objects.Background import Background
 
@@ -5,31 +7,21 @@ class Fading(SubEngine):
 
     def __init__(self):
         SubEngine.__init__(self, "Fading", 1)
-        self.rgb = [255, 0, 0]
-        self.phase = ([0, 1, 0], [-1, 0, 0], [0, 0, 1], [0, -1, 0], [1, 0, 0], [0, 0, -1])
-        self.index = 0
-        self.p = None
+        self.background = None
+        self.angle = 0.0   # in °
+        self.speed = 1.0   # °/s
+        self.const = 1/360 #const for 1° in %
 
     def setup(self):
-        self.p = Background(self.pixellength)
-        self.addObj(self.p)
+        self.background = Background(self.pixellength)
+        self.addObj(self.background)
 
     def update(self):
-        self.getColor()
-        self.p.setColor(self.rgb)
+        self.angle += self.speed
+        if self.angle >=360:
+            self.angle -= 360
+        pixel = []
 
-    def getStates(self):
-        return [["strip/info/Fading/enable", str(self.isEnabled)]]
-
-    def getColor(self, speed=1):
-        for i in range(3):
-            self.rgb[i] = self.rgb[i] + (self.phase[self.index][i] * speed)
-
-        if self.rgb[0] < 0 or self.rgb[0] > 255 or self.rgb[1] < 0 or self.rgb[1] > 255 or self.rgb[2] < 0 or self.rgb[2] > 255:
-            for i in range(3):
-                self.rgb[i] = self.rgb[i] - self.phase[self.index][i]
-
-            self.index = self.index + 1
-
-            if self.index >= len(self.phase):
-                self.index = 0
+        for c in hsv_to_rgb(self.angle/360, 1, 1):
+            pixel.append(c * 255)
+        self.background.setColor(pixel)

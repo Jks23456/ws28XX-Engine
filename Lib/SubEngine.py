@@ -3,10 +3,9 @@ from time import sleep
 
 class SubEngine:
 
-    def __init__(self, pName, layercount, pIsCompressed=False, pCompressionClass=None):
+    def __init__(self, pName, layercount, pCompressionClass=None):
         self.layList = []
         self.name = pName
-        self.isCompressed = pIsCompressed
         self.compClass = pCompressionClass
         self.isRunning = False
         self.pixellength = -1
@@ -40,7 +39,7 @@ class SubEngine:
 
     def sendFrame(self):
         self.update()
-        if self.isCompressed:
+        if self.compClass is not None:
             self.pipe.send(self.compClass.compress(self.getFrame()))
         else:
             self.pipe.send(self.getFrame())

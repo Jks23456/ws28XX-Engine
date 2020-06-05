@@ -5,7 +5,7 @@ from Lib.Objects.Snake import Snake
 class Alarm(SubEngine):
 
     def __init__(self, pSnakeCount, pSnakeLenght):
-        super().__init__("RedAlert", 1, True, getBlockCompression())
+        super().__init__("Alarm", 1, getBlockCompression())
         self.snakeCount = pSnakeCount
         self.snakeLength = pSnakeLenght
         self.snakes = []
