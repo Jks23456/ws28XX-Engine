@@ -1,24 +1,33 @@
 from Lib.Layer import Layer
 from time import sleep
+from Lib.Resourcen.Manager import getManager
 
 class SubEngine:
 
     def __init__(self, pName, layercount, pCompressionClass=None):
         self.layList = []
+        self.condition = []
         self.name = pName
         self.compClass = pCompressionClass
         self.isRunning = False
         self.pixellength = -1
         self.transparent = [-1, -1, -1]
+        self.seed = ""
+        self.manager = None
 
         for i in range(layercount):
             tmp = Layer()
             self.layList.append(tmp)
 
-    def configur(self, pPipe, pPixellength):
+    def configur(self, pPipe, pPixellength, pSeed):
         if not self.isRunning:
             self.pipe = pPipe
             self.pixellength = pPixellength
+            self.seed = pSeed
+
+    def addStartingCondition(self, pCondition):
+        if not self.isRunning:
+            self.condition.append(pCondition)
 
     def addObj(self, obj, layer=0):
         self.layList[layer].addObj(obj)
@@ -29,6 +38,8 @@ class SubEngine:
 
     def run(self):
         self.isRunning = True
+        self.manager = getManager(False)
+        self.manager.setSeed(self.seed)
         self.setup()
         while self.isRunning:
             try:
@@ -68,6 +79,7 @@ class SubEngine:
                 if stri == "t":
                     self.isRunning = False
                     self.terminate()
+                    self.pipe.send("t")
                 elif stri == "f":
                     self.sendFrame()
                 elif stri.startswith("m:"):
