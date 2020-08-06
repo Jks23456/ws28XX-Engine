@@ -9,7 +9,7 @@ class Fading(SubEngine):
         SubEngine.__init__(self, "Fading", 1)
         self.background = None
         self.angle = 0.0   # in °
-        self.speed = 1.0   # °/s
+        self.speed = 3.0   # °/s
         self.const = 1/360 #const for 1° in %
 
     def setup(self):

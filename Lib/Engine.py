@@ -1,17 +1,18 @@
 import time
 import multiprocessing
-from Lib.Effects.Alarm import Alarm
+from Lib.Resourcen.Manager import getManager
+
 
 class ProcessWrap:
 
-    def __init__(self, pSub, pIsEnabled):
-        self.name = pSub.name
-        self.subEngine = pSub
+    def __init__(self, pObj, pIsEnabled):
+        self.name = pObj.name
+        self.object = pObj
         self.process = None
         self.pipe = None
         self.isAcknowledged = True
         self.isEnabled = pIsEnabled
-        self.compClass = pSub.compClass
+        self.compClass = pObj.compClass
 
     def isActive(self):
         return self.pipe != None and self.process != None
@@ -30,9 +31,11 @@ class Engine:
         self.isRunning = False
         self.brightness = 100
         self.processes = []
+        self.resourcen = []
         self.frames = {}
         self.controller = None
         self.pixellength = 0
+        self.manager = getManager(True)
 
     def startMQTT(self, pAddress, pName):
         import paho.mqtt.client as mqtt
@@ -74,17 +77,36 @@ class Engine:
         if not self.isRunning:
             self.processes.append(ProcessWrap(pSub, pIsEnabled))
 
+    def addResource(self, pResource):
+        if not self.isRunning:
+            self.resourcen.append(ProcessWrap(pResource, False))
+
     def run(self):
         try:
             self.isRunning = True
             self.controller.setup()
             self.pixellength = self.controller.pixellength
 
+            print("Define all Resources")
+            for prWrap in self.resourcen:
+                print(prWrap.name)
+                prWrap.object.defineData(self.manager)
+
+            print("Start all Resources:")
+            for prWrap in self.resourcen:
+                print(prWrap.name)
+                parent, child = multiprocessing.Pipe()
+                prWrap.process = multiprocessing.Process(target=prWrap.object.run)
+                prWrap.object.configur(child, self.manager.getSeed())
+                prWrap.pipe = parent
+                prWrap.process.start()
+
             while self.isRunning:
                 fr = time.perf_counter()
                 frames = [[-1, -1, -1]] * self.pixellength
                 for prWrap in self.processes:
                     if prWrap.isEnabled and prWrap.isAcknowledged and prWrap.isActive():
+                        prWrap.isAcknowledged = False
                         prWrap.pipe.send("f")
                 for prWrap in self.processes:
                     if prWrap.isEnabled and not prWrap.isActive():
@@ -122,7 +144,6 @@ class Engine:
                 fr = time.perf_counter() - fr
                 if fr <= 0.02:
                     time.sleep(0.02 - fr)
-
         except KeyboardInterrupt:
             self.terminateAll()
         except Exception as e:
@@ -133,19 +154,29 @@ class Engine:
     def startSubEngine(self, prWrap):
         if self.isRunning and not prWrap.isActive(): #[pSub.mqttTopic, process, parent, True]
             print("Start: " + prWrap.name)
+            print("Activate Conditions:")
+            for c in prWrap.object.condition:
+                for r in self.resourcen:
+                    if r.name == c:
+                        r.pipe.send("A")
+                        print(c)
+
             parent, child = multiprocessing.Pipe()
-            process = multiprocessing.Process(target=prWrap.subEngine.run)
-            prWrap.subEngine.configur(child, self.pixellength)
-            prWrap.process = process
+            prWrap.process = multiprocessing.Process(target=prWrap.object.run)
+            prWrap.object.configur(child, self.pixellength, self.manager.getSeed())
             prWrap.pipe = parent
             prWrap.isEnabled = True
-            process.start()
-            self.frames[prWrap.name] = ([[-1, -1, -1]]*self.pixellength)
+            self.frames[prWrap.name] = ([[-1, -1, -1]] * self.pixellength)
+            prWrap.process.start()
 
     def terminateSubEngine(self, prWrap):
         if prWrap.isActive():
             print("Terminate: " + prWrap.name)
             prWrap.pipe.send("t")
+            acn = False
+            while not acn:
+                if prWrap.pipe.recv() == "t":
+                    acn = True
             print("Joining Process...")
             prWrap.process.join()
             print("Done!")
@@ -153,6 +184,13 @@ class Engine:
             prWrap.process = None
             prWrap.pipe = None
             prWrap.isEnabled = False
+
+            print("Deactivate Conditions:")
+            for c in prWrap.object.condition:
+                for r in self.resourcen:
+                    if r.name == c:
+                        r.pipe.send("T")
+                        print(c)
 
     def terminateAll(self):
         self.isRunning = False
