@@ -1,11 +1,69 @@
-from multiprocessing import Process
 from Lib.Resourcen.Manager import getManager
+from Lib.Resourcen.Resource import Resource
+
 import pyaudio
 import struct
 import numpy as np
 
+class Microphone(Resource):
 
-class Microphone:
+    def __init__(self):
+        super().__init__("Microphone")
+        self.chunk = 1024
+        self.offset = [0] * self.chunk
+
+        self.raw_data = []
+        self.fft_data = []
+        self.amp_data = []
+
+        self.manager = getManager()
+        self.manager.defineData("MIC_RAW", 1024)
+        self.manager.defineData("MIC_FFT", 1024)
+        self.manager.defineData("MIC_AMP", 1024)
+
+        self.p = None
+
+    def activate(self):
+        self.p = pyaudio.PyAudio()
+        self.stream = self.p.open(
+            format=pyaudio.paInt16,
+            channels=1,
+            rate=48000,
+            input=True,
+            output=False,
+            frames_per_buffer=self.chunk
+        )
+
+    def deactivate(self):
+        self.stream.close()
+        self.p.terminate()
+
+    def update(self):
+        data_raw = struct.unpack(str(2 * self.chunk) + 'B', self.stream.read(self.chunk, exception_on_overflow=False))
+        self.amp_data = data_raw[:]
+        data_fft = np.fft.fft(data_raw)  # * np.hanning(len(data_raw)))
+        data_fft = np.abs(data_fft)
+        data_fft = list(data_fft[0:self.chunk])
+        data_fft = map(self.resize, data_fft)
+        diff = []
+        self.raw_data = data_fft[:]
+        zip1 = zip(data_fft, self.offset)
+        for a, b in zip1:
+            diff.append(a - b)
+        self.fft_data = diff[:]
+
+        self.manager.writeData("MIC_RAW", self.raw_data)
+        self.manager.writeData("MIC_FFT", self.fft_data)
+        self.manager.writeData("MIC_AMP", self.amp_data)
+
+    def resize(self, num):
+        return (num*2)/self.chunk
+
+
+
+
+
+class Backup:
 
     def __init__(self):
         self.isEnabled = False

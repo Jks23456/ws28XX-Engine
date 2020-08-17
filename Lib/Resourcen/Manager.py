@@ -109,8 +109,15 @@ class Manager:
         self.names = []
         self.nameLength = 6
         self.sockets = []
+        self.isEmpty = False
 
     def setSeed(self, pSeed):
+        if pSeed == "":
+            self.isEmpty = True
+            return
+        else:
+            self.isEmpty = False
+
         mps = pSeed.split(";")
         for m in mps:
             spl = m.split("|")
@@ -151,6 +158,8 @@ class Manager:
                 self.maps.append(m)
 
     def readData(self, pName):
+        if self.isEmpty:
+            return ""
         for m in self.maps:
             data = m.readData(pName)
             if data != None:

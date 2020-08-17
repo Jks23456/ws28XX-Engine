@@ -13,6 +13,12 @@ class Panel:
         self.isRepeated = False
         self.repeats = 0
 
+        self.gaussMatrix = []
+        self.gaussNummber = 0
+        self.gaussActive = False
+
+        self.setGaussMatrix([41,26,16,7,4,1])
+
     def setContent(self, pContent):
         self.kernelContent = pContent[:]
         self.processing()
@@ -29,6 +35,17 @@ class Panel:
             self.isRepeated = False
             self.repeats = 0
         self.processing()
+
+    def gauss(self, pIsActive):
+        self.gaussActive = pIsActive
+
+    def setGaussMatrix(self, pMatrix):
+        self.gaussMatrix = pMatrix
+        tmp = 0
+        for i in self.gaussMatrix:
+            tmp += i
+
+        self.gaussNummber = tmp*2 - self.gaussMatrix[0]
 
     def stayLooped(self, pBoolean):
         self.isLooped = pBoolean
@@ -63,5 +80,31 @@ class Panel:
         if self.isRepeated:
             newContent = newContent * self.repeats
 
-        # Push to Content
-        self.content = newContent
+        #Gauss
+        if self.gaussActive:
+            gc = []
+            for pixel in range(len(newContent)):
+                chanels = [0,0,0]
+                for gaussMode in range(len(self.gaussMatrix)):
+                    if gaussMode == 0:
+                        for color in range(3):
+                            chanels[color] = newContent[pixel][color] * self.gaussMatrix[0]
+                    else:
+                        valH = pixel + gaussMode
+                        if valH >= len(newContent):
+                            valH -= len(newContent)
+
+                        valL = pixel - gaussMode
+                        if valL < 0:
+                            valL += len(newContent)
+
+                        for color in range(3):
+                            chanels[color] += (newContent[valH][color] + newContent[valL][color]) * self.gaussMatrix[gaussMode]
+
+                for color in range(3):
+                    chanels[color] = int(chanels[color] / self.gaussNummber)
+                gc.append(chanels)
+            self.content = gc[:]
+        else:
+            # Push to Content
+            self.content = newContent

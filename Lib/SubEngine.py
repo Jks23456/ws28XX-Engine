@@ -19,6 +19,7 @@ class SubEngine:
             tmp = Layer()
             self.layList.append(tmp)
 
+
     def configur(self, pPipe, pPixellength, pSeed):
         if not self.isRunning:
             self.pipe = pPipe
