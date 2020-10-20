@@ -1,4 +1,4 @@
-# JB-LED
+# ws28XX-LED
 LED-Animation Engine (Object based)
 ## Overview
 This libary is an easy to use Layer-Based Engine for common LED-Strips such as the ws2812b.
