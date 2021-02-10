@@ -8,7 +8,7 @@ The engine is capable of overlaying multiple effects into one displayable pictur
 #### Many Thanks to Mithrandir...
 
 ## Getting Started
-<p>Clone this reposetory and open it with a Python IDE. Some effekcs and objects need further package installation (See Doc).</p)
+<p>Clone this reposetory and open it with a Python IDE. Some effects and objects need further package installation (See Doc).</p)
 
 ## Seting up the Engine
 <p>Import Engine, Consol and Alarm</p>
