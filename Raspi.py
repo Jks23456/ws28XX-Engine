@@ -16,6 +16,6 @@ if __name__ == '__main__':
     eng = Engine()
     eng.setControler(strip)
     eng.startMQTT("strip")
-    eng.addSubEngine(FrameMaster(6501, ip="192.168.2.114"), True)
-    eng.addSubEngine(Fading(), False)
+    eng.addSubEngine(FrameMaster(6501, ip="192.168.2.121"), True)
+    #eng.addSubEngine(Fading(), False)
     eng.run()

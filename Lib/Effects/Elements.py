@@ -10,7 +10,7 @@ class Elements(SubEngine):
     def __init__(self):
         super().__init__("FadingDot", 1)
         self.clock = 0
-        self.baseAngle = 10 #FireAngle=10, WaterAngle=60, AirAngle=55,  EarthAngle=30,
+        self.baseAngle = 55 #FireAngle=10, WaterAngle=60, AirAngle=55,  EarthAngle=30,
 
     def setup(self):
         self.panel = Panel()
